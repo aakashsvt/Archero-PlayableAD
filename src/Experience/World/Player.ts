@@ -71,7 +71,27 @@ export default class Player {
             }
         }
 
-        // 6. Apply Final Velocity to Position
-        this.playerMesh.mesh.position.add(this.velocity.clone().multiplyScalar(deltaTime));
+        // 6. Calculate new position
+        const newPosition = this.playerMesh.mesh.position.clone().add(this.velocity.clone().multiplyScalar(deltaTime));
+
+        // 7. Clamp Position to Room Boundaries
+        const playerRadius = 0.5; // Half of the 1x1x1 cube width
+        
+        // Wait for the room to be instantiated
+        if (this.experience.world.room) {
+            const room = this.experience.world.room;
+            const boundX = (room.width / 2) - playerRadius;
+            const boundZ = (room.length / 2) - playerRadius;
+
+            // Stop velocity if hitting a wall to prevent "sliding" against it indefinitely
+            if (newPosition.x < -boundX || newPosition.x > boundX) this.velocity.x = 0;
+            if (newPosition.z < -boundZ || newPosition.z > boundZ) this.velocity.z = 0;
+
+            newPosition.x = THREE.MathUtils.clamp(newPosition.x, -boundX, boundX);
+            newPosition.z = THREE.MathUtils.clamp(newPosition.z, -boundZ, boundZ);
+        }
+
+        // Apply clamped position
+        this.playerMesh.mesh.position.copy(newPosition);
     }
 }

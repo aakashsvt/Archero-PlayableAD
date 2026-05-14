@@ -1,13 +1,13 @@
 import Experience from '../Experience'
 import Resources from '../Utils/Resources'
 import Lights from './Lights'
-import Ground from './Ground'
+import Room from './Room'
 import Player from './Player'
 
 export default class World {
     private experience: Experience;
     private resources: Resources;
-    public ground!: Ground;
+    public room!: Room;
     public lights!: Lights;
     public player!: Player;
 
@@ -27,7 +27,7 @@ export default class World {
     }
 
     private setup(): void {
-        this.ground = new Ground();
+        this.room = new Room();
         this.lights = new Lights();
         this.player = new Player();
     }
