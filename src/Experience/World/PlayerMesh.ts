@@ -15,7 +15,7 @@ export default class PlayerMesh {
 
     private setMesh(): void {
         const geometry = new THREE.BoxGeometry(this.meshScale, this.meshScale, this.meshScale);
-        const material = new THREE.MeshStandardMaterial({ color: '#ff0000' });
+        const material = new THREE.MeshStandardMaterial({ color: 0x0066ff }); // Bright Blue
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.castShadow = true;
         this.mesh.position.y = this.meshScale / 2; // Sit on the ground

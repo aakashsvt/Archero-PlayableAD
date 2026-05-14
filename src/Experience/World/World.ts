@@ -3,12 +3,14 @@ import Resources from '../Utils/Resources'
 import Lights from './Lights'
 import Room from './Room'
 import Player from './Player'
+import Obstacles from './Obstacles'
 
 export default class World {
     private experience: Experience;
     private resources: Resources;
     public room!: Room;
     public lights!: Lights;
+    public obstacles!: Obstacles;
     public player!: Player;
 
     constructor() {
@@ -29,6 +31,7 @@ export default class World {
     private setup(): void {
         this.room = new Room();
         this.lights = new Lights();
+        this.obstacles = new Obstacles();
         this.player = new Player();
     }
 

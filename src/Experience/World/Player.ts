@@ -70,27 +70,67 @@ export default class Player {
             }
         }
 
-        // Calculate new position
-        const newPosition = this.playerMesh.mesh.position.clone().add(this.velocity.clone().multiplyScalar(deltaTime));
+        // Calculate independent movement steps
+        const movementStep = this.velocity.clone().multiplyScalar(deltaTime);
+        const newPositionX = this.playerMesh.mesh.position.clone().add(new THREE.Vector3(movementStep.x, 0, 0));
+        const newPositionZ = this.playerMesh.mesh.position.clone().add(new THREE.Vector3(0, 0, movementStep.z));
 
-        // Clamp Position to Room Boundaries
-        const playerRadius = 0.5; // Half of the 1x1x1 cube width
+        const playerRadius = 0.25; // Half of the 0.5x0.5x0.5 cube width
+        const playerHeight = 0.5;
         
-        // Wait for the room to be instantiated
+        // 1. Check Room Boundaries
         if (this.experience.world.room) {
             const room = this.experience.world.room;
             const boundX = (room.width / 2) - playerRadius;
             const boundZ = (room.length / 2) - playerRadius;
 
-            // Stop velocity if hitting a wall to prevent "sliding" against it indefinitely
-            if (newPosition.x < -boundX || newPosition.x > boundX) this.velocity.x = 0;
-            if (newPosition.z < -boundZ || newPosition.z > boundZ) this.velocity.z = 0;
-
-            newPosition.x = THREE.MathUtils.clamp(newPosition.x, -boundX, boundX);
-            newPosition.z = THREE.MathUtils.clamp(newPosition.z, -boundZ, boundZ);
+            // X bounds
+            if (newPositionX.x < -boundX || newPositionX.x > boundX) {
+                this.velocity.x = 0;
+                newPositionX.x = THREE.MathUtils.clamp(newPositionX.x, -boundX, boundX);
+            }
+            
+            // Z bounds
+            if (newPositionZ.z < -boundZ || newPositionZ.z > boundZ) {
+                this.velocity.z = 0;
+                newPositionZ.z = THREE.MathUtils.clamp(newPositionZ.z, -boundZ, boundZ);
+            }
         }
 
-        // Apply clamped position
-        this.playerMesh.mesh.position.copy(newPosition);
+        // 2. Check Obstacles (AABB Collision)
+        if (this.experience.world.obstacles) {
+            const obstacles = this.experience.world.obstacles.boundingBoxes;
+            
+            // Check X movement collision
+            const playerBoxX = new THREE.Box3().setFromCenterAndSize(
+                new THREE.Vector3(newPositionX.x, playerHeight / 2, this.playerMesh.mesh.position.z),
+                new THREE.Vector3(playerRadius * 2, playerHeight, playerRadius * 2)
+            );
+            
+            for (const obsBox of obstacles) {
+                if (playerBoxX.intersectsBox(obsBox)) {
+                    this.velocity.x = 0;
+                    newPositionX.x = this.playerMesh.mesh.position.x; // Revert X movement
+                    break;
+                }
+            }
+
+            // Check Z movement collision (incorporating the new allowed X position to prevent corner snags)
+            const playerBoxZ = new THREE.Box3().setFromCenterAndSize(
+                new THREE.Vector3(newPositionX.x, playerHeight / 2, newPositionZ.z),
+                new THREE.Vector3(playerRadius * 2, playerHeight, playerRadius * 2)
+            );
+
+            for (const obsBox of obstacles) {
+                if (playerBoxZ.intersectsBox(obsBox)) {
+                    this.velocity.z = 0;
+                    newPositionZ.z = this.playerMesh.mesh.position.z; // Revert Z movement
+                    break;
+                }
+            }
+        }
+
+        // Apply final combined position
+        this.playerMesh.mesh.position.set(newPositionX.x, this.playerMesh.mesh.position.y, newPositionZ.z);
     }
 }
