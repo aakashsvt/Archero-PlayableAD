@@ -14,7 +14,7 @@ export default class Player {
     private velocity: THREE.Vector3 = new THREE.Vector3();
     
     // Movement configuration
-    private maxSpeed: number = 2.5;      // Maximum units per second
+    private maxSpeed: number = 2.8;      // Maximum units per second
     private acceleration: number = 40;   // How fast we reach max speed
     private friction: number = 10;       // How fast we stop (damping)
     private rotationSpeed: number = 15;  // Radians per second

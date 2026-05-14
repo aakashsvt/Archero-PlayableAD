@@ -105,25 +105,38 @@ export default class Input extends EventEmitter {
         const deltaX = pos.clientX - this.center.x;
         const deltaY = pos.clientY - this.center.y;
 
-        // Calculate distance and clamp to max radius
-        let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        let normalizedX = deltaX;
-        let normalizedY = deltaY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // --- Logical Direction Calculation ---
+        // Max logical radius is 60 (half of base width). This determines the -1 to 1 value.
+        let logicalX = deltaX;
+        let logicalY = deltaY;
 
         if (distance > this.maxRadius) {
             const ratio = this.maxRadius / distance;
-            normalizedX *= ratio;
-            normalizedY *= ratio;
-            distance = this.maxRadius;
+            logicalX *= ratio;
+            logicalY *= ratio;
+        }
+
+        // Update logical direction (-1 to 1)
+        this.direction.set(logicalX / this.maxRadius, logicalY / this.maxRadius);
+
+        // --- Visual Stick Position Calculation ---
+        // Base radius (60) - Stick radius (25) = 35px maximum visual movement from center
+        const visualMaxRadius = 35;
+        let visualX = deltaX;
+        let visualY = deltaY;
+
+        if (distance > visualMaxRadius) {
+            const ratio = visualMaxRadius / distance;
+            visualX *= ratio;
+            visualY *= ratio;
         }
 
         // Update visual stick position
         if (this.joystickStick) {
-            this.joystickStick.style.transform = `translate(-50%, -50%) translate(${normalizedX}px, ${normalizedY}px)`;
+            this.joystickStick.style.transform = `translate(-50%, -50%) translate(${visualX}px, ${visualY}px)`;
         }
-
-        // Update logical direction (-1 to 1)
-        this.direction.set(normalizedX / this.maxRadius, normalizedY / this.maxRadius);
     }
 
     private onEnd(): void {
