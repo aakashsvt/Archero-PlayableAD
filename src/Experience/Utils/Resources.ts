@@ -30,6 +30,10 @@ export default class Resources extends EventEmitter {
         };
 
         this.startLoading();
+
+        if (this.toLoad === 0) {
+            this.trigger('ready');
+        }
     }
 
     private startLoading(): void {

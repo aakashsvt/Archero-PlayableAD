@@ -6,6 +6,7 @@ import Camera from './Camera'
 import Renderer from './Renderer'
 import World from './World/World'
 import Resources from './Utils/Resources'
+import Input from './Utils/Input'
 import sources from './sources'
 
 let instance: Experience | null = null
@@ -21,6 +22,7 @@ export default class Experience {
     public debug!: Debug;
     public sizes!: Sizes;
     public time!: Time;
+    public input!: Input;
     public scene!: THREE.Scene;
     public resources!: Resources;
     public camera!: Camera;
@@ -46,6 +48,7 @@ export default class Experience {
         this.debug = new Debug();
         this.sizes = new Sizes();
         this.time = new Time();
+        this.input = new Input();
         this.scene = new THREE.Scene();
         this.resources = new Resources(sources);
         this.camera = new Camera();

@@ -1,35 +1,28 @@
 import * as THREE from 'three'
 import Experience from '../Experience'
-import Resources from '../Utils/Resources'
 import Debug from '../Utils/Debug'
 import GUI from 'lil-gui'
 
-export default class Environment {
+export default class Lights {
     private experience: Experience;
     private scene: THREE.Scene;
-    private resources: Resources;
     private debug: Debug;
     private debugFolder?: GUI;
     public sunLight!: THREE.DirectionalLight;
-    public environmentMap!: {
-        intensity: number;
-        texture: THREE.CubeTexture;
-        updateMaterials: () => void;
-    };
+    public ambientLight!: THREE.AmbientLight;
 
     constructor() {
         this.experience = new Experience();
         this.scene = this.experience.scene;
-        this.resources = this.experience.resources;
         this.debug = this.experience.debug;
 
         // Debug
         if (this.debug.active && this.debug.ui) {
-            this.debugFolder = this.debug.ui.addFolder('environment');
+            this.debugFolder = this.debug.ui.addFolder('lights');
         }
 
         this.setSunLight();
-        this.setEnvironmentMap();
+        this.setAmbientLight();
     }
 
     private setSunLight(): void {
@@ -73,35 +66,18 @@ export default class Environment {
         }
     }
 
-    private setEnvironmentMap(): void {
-        this.environmentMap = {
-            intensity: 0.4,
-            texture: this.resources.items.environmentMapTexture,
-            updateMaterials: () => {
-                this.scene.traverse((child) => {
-                    if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-                        child.material.envMap = this.environmentMap.texture;
-                        child.material.envMapIntensity = this.environmentMap.intensity;
-                        child.material.needsUpdate = true;
-                    }
-                });
-            }
-        };
-
-        this.environmentMap.texture.colorSpace = THREE.SRGBColorSpace;
-        this.scene.environment = this.environmentMap.texture;
-
-        this.environmentMap.updateMaterials();
+    private setAmbientLight(): void {
+        this.ambientLight = new THREE.AmbientLight('#ffffff', 1);
+        this.scene.add(this.ambientLight);
 
         // Debug
         if (this.debug.active && this.debugFolder) {
             this.debugFolder
-                .add(this.environmentMap, 'intensity')
-                .name('envMapIntensity')
+                .add(this.ambientLight, 'intensity')
+                .name('ambientIntensity')
                 .min(0)
-                .max(4)
-                .step(0.001)
-                .onChange(this.environmentMap.updateMaterials);
+                .max(5)
+                .step(0.001);
         }
     }
 }
