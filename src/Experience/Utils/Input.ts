@@ -129,9 +129,15 @@ export default class Input extends EventEmitter {
     private onEnd(): void {
         this.isDragging = false;
         
-        // Reset stick to center visually
-        if (this.joystickStick) {
+        if (this.joystickBase && this.joystickStick) {
+            // Reset stick to center visually
             this.joystickStick.style.transform = `translate(-50%, -50%) translate(0px, 0px)`;
+            
+            // Reset base to default CSS position
+            this.joystickBase.style.left = '50%';
+            this.joystickBase.style.top = 'auto';
+            this.joystickBase.style.bottom = '50px';
+            this.joystickBase.style.transform = 'translateX(-50%)';
         }
 
         this.direction.set(0, 0);

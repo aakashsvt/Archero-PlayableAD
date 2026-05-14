@@ -30,7 +30,7 @@ export default class Player {
     public update(): void {
         const deltaTime = this.time.delta / 1000;
 
-        // 1. Gather Unified Input (Joystick or Keyboard)
+        // Gather Unified Input (Joystick or Keyboard)
         // input.direction.x is Left/Right, input.direction.y is Up/Down
         const inputDirection = new THREE.Vector3(this.input.direction.x, 0, this.input.direction.y);
 
@@ -40,16 +40,16 @@ export default class Player {
                  inputDirection.normalize();
             }
 
-            // 2. Apply Acceleration
+            // Apply Acceleration
             const accelVec = inputDirection.clone().multiplyScalar(this.acceleration * deltaTime);
             this.velocity.add(accelVec);
 
-            // 3. Clamp to Max Speed
+            //  Clamp to Max Speed
             if (this.velocity.length() > this.maxSpeed) {
                 this.velocity.setLength(this.maxSpeed);
             }
 
-            // 4. Rotate Mesh towards Velocity
+            // Rotate Mesh towards Velocity
             const targetRotation = Math.atan2(this.velocity.x, this.velocity.z);
             const rotationStep = this.rotationSpeed * deltaTime;
             
@@ -59,7 +59,7 @@ export default class Player {
             
             this.playerMesh.mesh.rotation.y += deltaRotation * Math.min(rotationStep, 1);
         } else {
-            // 5. Apply Friction (Damping) when no input is provided
+            // Apply Friction (Damping) when no input is provided
             // This creates the "organic" stop feel
             const frictionFactor = Math.max(0, 1 - this.friction * deltaTime);
             this.velocity.multiplyScalar(frictionFactor);
@@ -70,10 +70,10 @@ export default class Player {
             }
         }
 
-        // 6. Calculate new position
+        // Calculate new position
         const newPosition = this.playerMesh.mesh.position.clone().add(this.velocity.clone().multiplyScalar(deltaTime));
 
-        // 7. Clamp Position to Room Boundaries
+        // Clamp Position to Room Boundaries
         const playerRadius = 0.5; // Half of the 1x1x1 cube width
         
         // Wait for the room to be instantiated
