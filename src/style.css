@@ -2,6 +2,10 @@
 {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    user-select: none; /* Prevent text selection while using joystick */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 html,
@@ -10,6 +14,7 @@ body
     overflow: hidden;
     height: 100dvh;
     width: 100dvw;
+    background-color: #000;
 }
 
 .webgl
@@ -18,4 +23,41 @@ body
     top: 0;
     left: 0;
     outline: none;
+    z-index: 1;
+}
+
+/* Virtual Joystick UI */
+#joystick-zone {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 50vh; /* Bottom half of the screen */
+    z-index: 10;
+    touch-action: none; /* Prevent browser handling of gestures like scroll/zoom */
+}
+
+#joystick-base {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 120px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    pointer-events: none; /* Let the zone handle events */
+}
+
+#joystick-stick {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }

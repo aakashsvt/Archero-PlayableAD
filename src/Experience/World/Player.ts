@@ -29,19 +29,18 @@ export default class Player {
 
     public update(): void {
         const deltaTime = this.time.delta / 1000;
-        const inputDirection = new THREE.Vector3();
 
-        // 1. Gather Input
-        if (this.input.keys.up) inputDirection.z -= 1;
-        if (this.input.keys.down) inputDirection.z += 1;
-        if (this.input.keys.left) inputDirection.x -= 1;
-        if (this.input.keys.right) inputDirection.x += 1;
+        // 1. Gather Unified Input (Joystick or Keyboard)
+        // input.direction.x is Left/Right, input.direction.y is Up/Down
+        const inputDirection = new THREE.Vector3(this.input.direction.x, 0, this.input.direction.y);
 
         if (inputDirection.length() > 0) {
-            inputDirection.normalize();
+            // Do not normalize, keep the magnitude from the joystick for analog speed control
+            if (inputDirection.length() > 1) {
+                 inputDirection.normalize();
+            }
 
             // 2. Apply Acceleration
-            // velocity = velocity + (direction * acceleration * dt)
             const accelVec = inputDirection.clone().multiplyScalar(this.acceleration * deltaTime);
             this.velocity.add(accelVec);
 
