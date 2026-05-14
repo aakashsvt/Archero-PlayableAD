@@ -1,9 +1,14 @@
-export default [
+export interface Source {
+    name: string;
+    type: 'cubeTexture' | 'texture' | 'gltfModel';
+    path: string | string[];
+}
+
+const sources: Source[] = [
     {
         name: 'environmentMapTexture',
         type: 'cubeTexture',
-        path:
-        [
+        path: [
             'textures/environmentMap/px.jpg',
             'textures/environmentMap/nx.jpg',
             'textures/environmentMap/py.jpg',
@@ -27,4 +32,6 @@ export default [
         type: 'gltfModel',
         path: 'models/Fox/glTF/Fox.gltf'
     }
-]
+];
+
+export default sources;
